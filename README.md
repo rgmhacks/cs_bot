@@ -15,15 +15,11 @@ A Retrieval-Augmented Generation (RAG) chatbot that uses Pinecone as the vector 
    OPENAI_API_KEY=your_openai_api_key_here
    PINECONE_API_KEY=your_pinecone_api_key_here
    PINECONE_ENVIRONMENT=your_pinecone_environment_here
+   GOOGLE_API_KEY=your_google_api_key_here
+   DB_URI=your_database_uri_here
    ```
 
-3. **Update Index Name**
-   In `backend/main.py`, update the `index_name` parameter to match your Pinecone index:
-   ```python
-   rag_agent = RAGAgent(index_name="your-actual-pinecone-index-name")
-   ```
-
-4. **Run the Server**
+3. **Run the Server**
    ```bash
    cd backend
    uvicorn main:app --reload
@@ -50,7 +46,6 @@ A Retrieval-Augmented Generation (RAG) chatbot that uses Pinecone as the vector 
 
 ## Customization
 
-- Adjust `chunk_size` and `chunk_overlap` in the RAG agent
 - Modify the system prompt in `rag_agent.py`
 - Change the number of retrieved documents (`k` parameter)
 - Update the LLM model or temperature settings 
