@@ -4,6 +4,12 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from rag_agent import RAGAgent
+from contextlib import ExitStack
+from langgraph.checkpoint.mongodb import MongoDBSaver
+
+
+stack = ExitStack()
+memory = stack.enter_context(MongoDBSaver.from_conn_string(os.getenv("DB_URI")))
 
 load_dotenv()
 
@@ -17,7 +23,7 @@ app.add_middleware(
 
 # Initialize RAG agent
 # Update the index_name to match your Pinecone index
-rag_agent = RAGAgent()
+rag_agent = RAGAgent(memory)
 
 @app.get("/")
 async def root():
