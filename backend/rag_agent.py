@@ -30,7 +30,7 @@ class State(TypedDict):
     prev: dict[str, RunningSummary]
 
 class RAGAgent:
-    def __init__(self):
+    def __init__(self, memory):
         # Initialize OpenAI components
         self.llm = ChatOpenAI(
             model="gpt-4o",
@@ -77,9 +77,9 @@ class RAGAgent:
             max_summary_tokens=128,
             output_messages_key="llm_input_messages",
         )
-
         self.graph_builder = StateGraph(State,pre_model_hook=self.summarization_node).add_sequence([self.refine_query, self.retrieve, self.generate])
         self.graph_builder.add_edge(START, "refine_query")
+        self.graph = self.graph_builder.compile(checkpointer=memory)
 
     def refine_query(self, state: State):
         """Refines the user question into a precise English search query for vector retrieval."""
@@ -115,10 +115,7 @@ class RAGAgent:
     
     def get_response(self, user_query: str, user_id: str) -> str:
         """Get RAG-based response"""
-        answer = ""
-        with MongoDBSaver.from_conn_string(os.getenv("DB_URI")) as checkpointer:
-            graph = self.graph_builder.compile(checkpointer=checkpointer)
-            config = {"configurable": {"thread_id": user_id}}
-            result = graph.invoke({"question": user_query}, config=config)
-            answer = result["answer"]
-        return str(answer) 
+        # with MongoDBSaver.from_conn_string(os.getenv("DB_URI")) as checkpointer:
+        config = {"configurable": {"thread_id": user_id}}
+        result = self.graph.invoke({"question": user_query}, config=config)
+        return str(result["answer"]) 
