@@ -147,6 +147,8 @@ const styles = {
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     color: "white",
     animation: "messageSlide 0.5s ease-out",
+    whiteSpace: "pre-wrap",  // Preserves newlines and spaces
+    lineHeight: "2",
   },
   messageBot: {
     background: CONFIG.THEME.secondaryGradient,
