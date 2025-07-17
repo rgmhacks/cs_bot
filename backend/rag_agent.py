@@ -10,7 +10,6 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pydantic import SecretStr, BaseModel, Field
 from langchain_openai import ChatOpenAI
 from langchain_core.documents import Document
-from langgraph.checkpoint.mongodb import MongoDBSaver
 from langmem.short_term import SummarizationNode, RunningSummary
 from langchain_core.messages.utils import count_tokens_approximately
 
@@ -77,9 +76,8 @@ class RAGAgent:
             max_summary_tokens=128,
             output_messages_key="llm_input_messages",
         )
-        self.graph_builder = StateGraph(State,pre_model_hook=self.summarization_node).add_sequence([self.refine_query, self.retrieve, self.generate])
-        self.graph_builder.add_edge(START, "refine_query")
-        self.graph = self.graph_builder.compile(checkpointer=memory)
+        self.memory = memory
+        self.graph = self.workflow()
 
     def refine_query(self, state: State):
         """Refines the user question into a precise English search query for vector retrieval."""
@@ -112,7 +110,11 @@ class RAGAgent:
         response = self.llm.invoke(messages)
         return {"answer": response.content}
 
-    
+    def workflow(self):
+        graph_builder = StateGraph(State,pre_model_hook=self.summarization_node).add_sequence([self.refine_query, self.retrieve, self.generate])
+        graph_builder.add_edge(START, "refine_query")
+        return graph_builder.compile(checkpointer=self.memory)
+
     def get_response(self, user_query: str, user_id: str) -> str:
         """Get RAG-based response"""
         # with MongoDBSaver.from_conn_string(os.getenv("DB_URI")) as checkpointer:
