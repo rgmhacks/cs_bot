@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from rag_agent import RAGAgent
+from rag import RAGAgent
 from contextlib import ExitStack
 from langgraph.checkpoint.mongodb import MongoDBSaver
 
@@ -33,14 +33,31 @@ async def root():
 async def chat(request: Request):
     body = await request.json()
     user_input = body.get("message")
+    session_id = body.get("session_id")
+    print("chat",session_id)
     
     if not user_input:
         return {"reply": "Please provide a message."}
     
     try:
-        # Get RAG-based response
-        response = rag_agent.get_response(user_input,"1324")
-        return {"reply": response}
+        response = rag_agent.get_response(user_input,session_id)
+        return response
+    except Exception as e:
+        return {"reply": f"Sorry, I encountered an error: {str(e)}"}
+    
+@app.post("/api/chat_resume")
+async def chat_resume(request: Request):
+    body = await request.json()
+    user_input = body.get("message")
+    session_id = body.get("session_id")
+    print("resume",session_id)
+    
+    if not user_input:
+        return {"reply": "Please provide a message."}
+    
+    try:
+        response = rag_agent.resume_chat(user_input,session_id)
+        return response
     except Exception as e:
         return {"reply": f"Sorry, I encountered an error: {str(e)}"}
 
