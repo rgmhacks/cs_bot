@@ -11,6 +11,7 @@ from src.followup_question import ask_for_more_info_chain
 from src.refine_query import refine_query
 from src.relevant_content import keep_only_relevant_content
 from src.conditional_edges import is_info_enough, is_relevant_content_present
+from src.raise_query import raise_user_query
 
 class Query(BaseModel):
     """Refined English search query for vector DB retrieval."""

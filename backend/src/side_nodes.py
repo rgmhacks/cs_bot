@@ -11,6 +11,7 @@ def get_human_reply(state):
     if state.get("additional_info") is None:
         state["additional_info"] = ""
     state["additional_info"] += f' User : {human_response} \n'
+    print(state["additional_info"])
     return state
 
 def retrieve(state):
@@ -18,26 +19,14 @@ def retrieve(state):
     try:
         query = state["query"]
         retrieved_docs = vector_store.similarity_search(
-            query
+            query, k = 3
         )
+        print(retrieved_docs)
         state["context"] = retrieved_docs
         return state
     except Exception as e:
         print(f"Error in retrieve: {str(e)}")
         state["context"] = []
-        return state
-
-def raise_user_query(state):
-    print("raise_user_query")
-    try:
-        query_description = state["query_description"]
-        print('-'*60)
-        print(query_description)
-        state["final_answer"] = "I have raised your query for further investigation. Our Customer Support Team will reach you soon."
-        return state
-    except Exception as e:
-        print(f"Error in raise_user_query: {str(e)}")
-        state["final_answer"] = "I have raised your query for further investigation. Our Customer Support Team will reach you soon."
         return state
 
 def summarization_node():
