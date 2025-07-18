@@ -5,6 +5,7 @@ const CONFIG = {
   API_BASE_URL: "http://127.0.0.1:8000",
   ENDPOINTS: {
     CHAT: "/api/chat",
+    CHAT_RESUME: "/api/chat_resume",
   },
   THEME: {
     primaryGradient: "linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)",
@@ -14,20 +15,44 @@ const CONFIG = {
   },
 };
 
+// Utility Functions Module
+const Utils = {
+  // Generate unique session ID
+  generateSessionId: () => {
+    const timestamp = Date.now().toString(36);
+    const randomPart = Math.random().toString(36).substr(2, 9);
+    return `session_${timestamp}_${randomPart}`;
+  },
+
+  // Get or create session ID
+  getSessionId: () => {
+    let sessionId = sessionStorage.getItem("dream11_chat_session");
+    if (!sessionId) {
+      sessionId = Utils.generateSessionId();
+      sessionStorage.setItem("dream11_chat_session", sessionId);
+    }
+    return sessionId;
+  },
+};
+
 // API Service Module
 class ChatAPI {
-  static async sendMessage(message) {
+  static async sendMessage(message, sessionId, isResume = false) {
+    const endpoint = isResume
+      ? CONFIG.ENDPOINTS.CHAT_RESUME
+      : CONFIG.ENDPOINTS.CHAT;
+
     try {
-      const response = await fetch(
-        `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.CHAT}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message }),
-        }
-      );
+      const response = await fetch(`${CONFIG.API_BASE_URL}${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+          session_id: sessionId,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -147,7 +172,7 @@ const styles = {
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     color: "white",
     animation: "messageSlide 0.5s ease-out",
-    whiteSpace: "pre-wrap",  // Preserves newlines and spaces
+    whiteSpace: "pre-wrap",
     lineHeight: "2",
   },
   messageBot: {
@@ -381,6 +406,13 @@ const Dream11SupportBot = () => {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [lastResponse, setLastResponse] = useState(null);
+  const [sessionId] = useState(() => Utils.getSessionId());
+
+  // Debug: Log session ID on component mount
+  useEffect(() => {
+    console.log("Chat session ID:", sessionId);
+  }, [sessionId]);
 
   const handleSendMessage = async (message) => {
     // Add user message
@@ -388,8 +420,25 @@ const Dream11SupportBot = () => {
     setIsLoading(true);
 
     try {
-      // Call API
-      const response = await ChatAPI.sendMessage(message);
+      // Determine if we should use resume endpoint
+      const shouldResume = lastResponse && !lastResponse.isCompleted;
+
+      // Debug: Log which endpoint will be used
+      console.log(
+        "Using endpoint:",
+        shouldResume ? "/api/chat_resume" : "/api/chat"
+      );
+      console.log("Last response isCompleted:", lastResponse?.isCompleted);
+
+      // Call appropriate API endpoint
+      const response = await ChatAPI.sendMessage(
+        message,
+        sessionId,
+        shouldResume
+      );
+
+      // Store the response for next iteration
+      setLastResponse(response);
 
       // Add bot response
       setMessages((prev) => [
@@ -403,6 +452,9 @@ const Dream11SupportBot = () => {
           isBot: true,
         },
       ]);
+
+      // Debug: Log response status
+      console.log("Response completed:", response.isCompleted);
     } catch (error) {
       // Add error message
       setMessages((prev) => [
@@ -412,6 +464,9 @@ const Dream11SupportBot = () => {
           isBot: true,
         },
       ]);
+
+      // Reset last response on error
+      setLastResponse(null);
     } finally {
       setIsLoading(false);
     }
