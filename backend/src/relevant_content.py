@@ -38,10 +38,16 @@ keep_only_relevant_content_chain = keep_only_relevant_content_prompt | llm | kee
 
 
 def keep_only_relevant_content(state):
-    retrieved_docs_content = "\n\n".join(doc.page_content for doc in state["context"])
-    input_data = {"query": state["query_description"], "retrieved_documents": retrieved_docs_content}
-    output = keep_only_relevant_content_chain.invoke(input_data)
-    state["is_relevant_content_present"] = output["is_relevant_content_present"]
-    if output["is_relevant_content_present"]:
-        state["context"] = [Document(page_content=content) for content in output["relevant_content"].split("\n\n")]
-    return state
+    print("keep_only_relevant_content")
+    try:
+        retrieved_docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+        input_data = {"query": state["query_description"], "retrieved_documents": retrieved_docs_content}
+        output = keep_only_relevant_content_chain.invoke(input_data)
+        state["is_relevant_content_present"] = output["is_relevant_content_present"]
+        if output["is_relevant_content_present"]:
+            state["context"] = [Document(page_content=content) for content in output["relevant_content"].split("\n\n")]
+        return state
+    except Exception as e:
+        print(f"Error in keep_only_relevant_content: {str(e)}")
+        state["is_relevant_content_present"] = False
+        return state

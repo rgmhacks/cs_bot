@@ -27,9 +27,15 @@ describe_query_prompt = PromptTemplate(
 describe_query_chain = describe_query_prompt | llm | describe_query_json_parser
 
 def describe_query(state):
-    question = state["question"]
-    additional_info = state.get("additional_info", "")
-    input_data = {"conversation": question + " " + additional_info}
-    query_description = describe_query_chain.invoke(input_data)
-    state["query_description"] = query_description["query_description"]
-    return state
+    print("describe_query")
+    try:
+        question = state["question"]
+        additional_info = state.get("additional_info", "")
+        input_data = {"conversation": question + " " + additional_info}
+        query_description = describe_query_chain.invoke(input_data)
+        state["query_description"] = query_description["query_description"]
+        return state
+    except Exception as e:
+        print(f"Error in describe_query: {str(e)}")
+        state["query_description"] = "Unable to process query description due to an error."
+        return state

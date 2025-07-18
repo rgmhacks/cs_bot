@@ -30,6 +30,12 @@ refine_query_prompt = PromptTemplate(
 refine_query_chain = refine_query_prompt | llm | refine_query_json_parser
 
 def refine_query(state):
-    query = refine_query_chain.invoke({"question": state["query_description"]})
-    state["query"] = query["query"]
-    return state
+    print("refine_query")
+    try:
+        query = refine_query_chain.invoke({"question": state["query_description"]})
+        state["query"] = query["query"]
+        return state
+    except Exception as e:
+        print(f"Error in refine_query: {str(e)}")
+        state["query"] = "Unable to refine query due to an error."
+        return state

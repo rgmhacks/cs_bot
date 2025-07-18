@@ -7,7 +7,7 @@ class Answer(BaseModel):
   answer : str = Field(description="The answer to the user query.")
 
 final_answer_prompt_template = """
-You are Dream11’s official customer support assistant.
+You are Dream11's official customer support assistant.
 You assist users by answering queries related to Dream11's fantasy sports platform such as deposits, account verification, contest rules, point system, withdrawals, and other gameplay-related questions.
 You will receive the description of the user's query and you will also receive some relevant content related to query. Your task is to answer the query.
 
@@ -38,7 +38,13 @@ final_answer_prompt  = PromptTemplate(
 final_answer_chain = final_answer_prompt | llm | final_answer_json_parser
 
 def answer_query(state):
-    docs_content = "\n\n".join(doc.page_content for doc in state["context"])
-    final_answer = final_answer_chain.invoke({"question" : state["query_description"], "context" : docs_content})
-    state["final_answer"] = final_answer["answer"]
-    return state
+    print("answer_query")
+    try:
+        docs_content = "\n\n".join(doc.page_content for doc in state["context"])
+        final_answer = final_answer_chain.invoke({"question" : state["query_description"], "context" : docs_content})
+        state["final_answer"] = final_answer["answer"]
+        return state
+    except Exception as e:
+        print(f"Error in answer_query: {str(e)}")
+        state["final_answer"] = "I'm sorry, I encountered an error while processing your request. Please try again or contact support."
+        return state
