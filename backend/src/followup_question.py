@@ -35,8 +35,10 @@ def ask_for_more_info_chain(state):
         question = state["question"]
         if state.get("additional_info") is None:
             state["additional_info"] = ""
+        if question not in state["additional_info"]:
+            state["additional_info"] += question
         additional_info = state.get("additional_info", "")
-        input_data = {"query": question + " " + additional_info}
+        input_data = {"query": additional_info}
         followup_question = ask_question_content_chain.invoke(input_data)
         state["followup_question"] = followup_question["question"]
         # Append the helper's question to additional_info for context

@@ -30,8 +30,12 @@ def describe_query(state):
     print("describe_query")
     try:
         question = state["question"]
+        if state.get("additional_info") is None:
+            state["additional_info"] = ""
+        if question not in state["additional_info"]:
+            state["additional_info"] += question
         additional_info = state.get("additional_info", "")
-        input_data = {"conversation": question + " " + additional_info}
+        input_data = {"conversation": additional_info}
         query_description = describe_query_chain.invoke(input_data)
         state["query_description"] = query_description["query_description"]
         return state

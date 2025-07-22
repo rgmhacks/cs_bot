@@ -35,8 +35,8 @@ def summarization_node():
         return SummarizationNode(
                 token_counter=count_tokens_approximately,
                 model=llm,
-                max_tokens=384,
-                max_summary_tokens=128,
+                max_tokens=2048,
+                max_summary_tokens=256,
                 output_messages_key="llm_input_messages",
             )
     except Exception as e:
@@ -45,7 +45,7 @@ def summarization_node():
         return SummarizationNode(
                 token_counter=count_tokens_approximately,
                 model=llm,
-                max_tokens=384,
-                max_summary_tokens=128,
+                max_tokens=2048,
+                max_summary_tokens=256,
                 output_messages_key="llm_input_messages",
             )

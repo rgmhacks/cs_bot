@@ -9,7 +9,7 @@ load_dotenv(override=True)
 
 try:
     llm = ChatOpenAI(
-                model="gpt-4o",
+                model="o4-mini",
                 api_key=SecretStr(os.getenv("OPENAI_API_KEY") or "")
             )
 except Exception as e:
