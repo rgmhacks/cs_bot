@@ -11,7 +11,6 @@ def get_human_reply(state):
     if state.get("additional_info") is None:
         state["additional_info"] = ""
     state["additional_info"] += f' User : {human_response} \n'
-    print(state["additional_info"])
     return state
 
 def retrieve(state):
@@ -21,7 +20,6 @@ def retrieve(state):
         retrieved_docs = vector_store.similarity_search(
             query, k = 3
         )
-        print(retrieved_docs)
         state["context"] = retrieved_docs
         return state
     except Exception as e:

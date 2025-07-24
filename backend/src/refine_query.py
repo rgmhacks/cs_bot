@@ -33,7 +33,6 @@ def refine_query(state):
     print("refine_query")
     try:
         query = refine_query_chain.invoke({"question": state["query_description"]})
-        print(query)
         state["query"] = query["query"]
         return state
     except Exception as e:
