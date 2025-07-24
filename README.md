@@ -48,4 +48,8 @@ A Retrieval-Augmented Generation (RAG) chatbot that uses Pinecone as the vector 
 
 - Modify the system prompt in `rag_agent.py`
 - Change the number of retrieved documents (`k` parameter)
-- Update the LLM model or temperature settings 
+- Update the LLM model or temperature settings
+
+## Workflow
+<img width="379" height="925" alt="image" src="https://github.com/user-attachments/assets/213a56fa-b638-42f4-bb77-83ed38a15bae" />
+
