@@ -304,7 +304,7 @@ const ChatHeader = () => (
     <div style={styles.headerShimmer}></div>
     <BotAvatar />
     <div style={styles.botInfo}>
-      <h2 style={styles.botTitle}>Dream11 Support Team</h2>
+      <h2 style={styles.botTitle}>Cricbuzz11 Support Team</h2>
       <p style={styles.botSubtitle}>Here to help you with your queries</p>
     </div>
     <div style={styles.statusIndicator}></div>
@@ -401,7 +401,7 @@ const ChatInput = ({ onSendMessage, isLoading }) => {
 const Dream11SupportBot = () => {
   const [messages, setMessages] = useState([
     {
-      text: "Hello! I'm from Dream11's support team. How can I help you today?",
+      text: "Hello! I'm from Cricbuzz11's support team. How can I help you today?",
       isBot: true,
     },
   ]);
