@@ -1,7 +1,7 @@
 from langgraph.types import interrupt
 from langmem.short_term import SummarizationNode
 from langchain_core.messages.utils import count_tokens_approximately
-from src.models import vector_store, llm
+from src.models import vector_store, llm, reranker
 
 def get_human_reply(state):
     # Interrupt and get human response
@@ -18,8 +18,10 @@ def retrieve(state):
     try:
         query = state["query"]
         retrieved_docs = vector_store.similarity_search(
-            query, k = 3
+            query, k = 25
         )
+        retrieved_docs = reranker.compress_documents(retrieved_docs, query)
+        print(retrieved_docs)
         state["context"] = retrieved_docs
         return state
     except Exception as e:

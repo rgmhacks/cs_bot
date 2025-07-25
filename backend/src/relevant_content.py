@@ -44,6 +44,7 @@ def keep_only_relevant_content(state):
         input_data = {"query": state["query_description"], "retrieved_documents": retrieved_docs_content}
         output = keep_only_relevant_content_chain.invoke(input_data)
         state["is_relevant_content_present"] = output["is_relevant_content_present"]
+        print(output["is_relevant_content_present"])
         if output["is_relevant_content_present"]:
             state["context"] = [Document(page_content=content) for content in output["relevant_content"].split("\n\n")]
         return state

@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from langchain_pinecone import PineconeVectorStore
+from langchain_pinecone import PineconeVectorStore, PineconeRerank
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
@@ -33,4 +33,12 @@ try:
             )
 except Exception as e:
     print(f"Error initializing Pinecone vector store: {str(e)}")
+    vector_store = None
+
+try:
+    reranker = PineconeRerank(model="bge-reranker-v2-m3", 
+                              top_n=3, 
+                              pinecone_api_key=os.getenv("PINECONE_API_KEY"))
+except Exception as e:
+    print(f"Error initializing Reranker: {str(e)}")
     vector_store = None
