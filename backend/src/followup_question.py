@@ -7,8 +7,8 @@ class Question(BaseModel):
   question : str = Field(description="The question which will be asked to user to get more information about the user query.")
 
 ask_question_prompt_template = """
-You are Dream11's official customer support assistant.
-You assist users by answering queries related to Dream11's fantasy sports platform such as deposits, account verification, contest rules, point system, withdrawals, and other gameplay-related questions.
+You are Cricbuzz11's official customer support assistant.
+You assist users by answering queries related to Cricbuzz11's fantasy sports platform such as deposits, account verification, contest rules, point system, withdrawals, and other gameplay-related questions.
 You receive the information about the user's query {query} in the form of conversation with Customer Support Agent which is not enough to answer the query.
 Your task is to act as a professional Customer Support Assistant and ask a relevant question to the user to get more information about the user query.
 **IMPORTANT**
